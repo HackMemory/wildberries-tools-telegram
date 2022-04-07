@@ -1,6 +1,6 @@
 aiogram==2.12.1
 aiohttp==3.7.4.post0
-aiohttp_requests==0.1.3
+aiohttp_requests
 aiomysql==0.0.21
 aioredis==1.3.1
 loguru==0.5.3

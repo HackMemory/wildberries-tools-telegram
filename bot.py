@@ -5,6 +5,9 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ParseMode
 from aiogram import executor
 from loguru import logger
+import logging
+
+from utils.db.db_api import Users
 
 from data import config
 
@@ -17,13 +20,17 @@ async def on_startup(dp: Dispatcher):
     handlers.errors.setup(dp)
     handlers.user.setup(dp)
 
+    await Users.create_table_users()
+
 
 async def on_shutdown(dp: Dispatcher):
     pass
 
 
 if __name__ == '__main__':
-    bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML, validate_token=True)
+    logging.basicConfig(level=logging.DEBUG)
+
+    bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML)
     storage = MemoryStorage()
     dp = Dispatcher(bot, storage=storage)
 

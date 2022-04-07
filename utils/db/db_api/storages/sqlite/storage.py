@@ -38,6 +38,8 @@ class SqliteConnection(RawConnection):
             try:
                 if isinstance(params, list):
                     c.executemany(sql, params)
+                if params == None:
+                    c.execute(sql)
                 else:
                     c.execute(sql, params)
             except Exception as e:

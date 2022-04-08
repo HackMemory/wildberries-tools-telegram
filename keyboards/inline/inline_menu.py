@@ -1,6 +1,6 @@
 from .consts import InlineConstructor
 from typing import List
-from .callbacks import menu_cd
+from .callbacks import *
 
 class InlineMenu(InlineConstructor):
 
@@ -47,7 +47,7 @@ class InlineMenu(InlineConstructor):
         has_next_page = (total_count//per_page) + 1 > int(page) + 1
 
         for i in range(0, len(items)):     
-            btns.append({"text": items[i]["value"], 'cb': menu_cd.new(action="select-item", data=items[i]["id"])})
+            btns.append({"text": items[i]["value"], 'cb': item_cd.new(action="select-item", data=items[i]["id"], page=page)})
             schema.append(1)
 
         page_schema = 0
@@ -81,6 +81,25 @@ class InlineMenu(InlineConstructor):
         btns = [
             {'text': 'Выбрать из списка', "cb": menu_cd.new(action="menu-items-choose", data="void") },
             {'text': 'Ввести вручную номер номенклатуры', "cb": menu_cd.new(action="menu-item-custom", data="void") },
+            {'text': '◀️В меню', "cb": menu_cd.new(action="main-menu-open", data="void") }
+        ]
+        return InlineMenu._create_kb(btns, schema)
+
+
+    @staticmethod
+    def item_menu(page = 0):
+        schema = [1, 1]
+        btns = [
+            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data="void") },
+            {'text': '◀️Назад', "cb": menu_cd.new(action="page", data=page) }
+        ]
+        return InlineMenu._create_kb(btns, schema)
+
+    @staticmethod
+    def item_menu_custom():
+        schema = [1, 1]
+        btns = [
+            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data="void") },
             {'text': '◀️В меню', "cb": menu_cd.new(action="main-menu-open", data="void") }
         ]
         return InlineMenu._create_kb(btns, schema)

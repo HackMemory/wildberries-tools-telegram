@@ -38,14 +38,41 @@ async def get_cards_list(token, count = 10, offset = 0) -> dict:
         if "error" in data:
             return None
         return data
-
     except:
         return None
     
 
-async def get_item_info(token, imt_id) -> dict:
+async def get_item_info(token, nm_id: int) -> dict:
     headers = {'Authorization': token}
-    pass
+    data = {
+        "params":{
+            "query":{
+                "limit":1,
+                "offset":0
+            },
+            "filter":{
+                "order":{
+                    "column":"createdAt",
+                    "order":"desc"
+                },
+                "find":[
+                    {
+                    "column":"nomenclatures.nmId",
+                    "search":int(nm_id)
+                    }
+                ]
+            }
+        },
+        "jsonrpc":"2.0",
+        "id":1
+    }
+            
+    resp = await requests.post(f'{url}card/list', headers=headers, data=json.dumps(data))
+    try:
+        res = await resp.json()
+        return res
+    except:
+        return None
 
 async def change_item_name(token, imt_id, name) -> bool:
     headers = {'Authorization': token}

@@ -28,4 +28,5 @@ def setup(dp: Dispatcher):
     dp.register_message_handler(process_token, state=user.Token.token)
 
     dp.register_callback_query_handler(my_items, menu_cd.filter(action="page"))
+    dp.register_callback_query_handler(select_item, item_cd.filter(action="select-item"))
     #dp.register_message_handler(bot_help, CommandHelp())

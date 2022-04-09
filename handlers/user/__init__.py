@@ -22,6 +22,9 @@ def setup(dp: Dispatcher):
     dp.register_callback_query_handler(custom_item_id, menu_cd.filter(action="menu-item-custom"))
     dp.register_message_handler(process_custom_item_id, state=user.FindItem.item_id)
 
+    dp.register_callback_query_handler(change_name, menu_cd.filter(action="item-change-name"))
+    dp.register_message_handler(process_change_name, state=user.ChangeItem.item_name)
+
     dp.register_callback_query_handler(remove_token_confirm, menu_cd.filter(action="token-yes"))
     dp.register_callback_query_handler(remove_token, menu_cd.filter(action="main-menu-remove-token"))
     dp.register_callback_query_handler(add_token, menu_cd.filter(action="main-menu-add-token"))
@@ -29,4 +32,6 @@ def setup(dp: Dispatcher):
 
     dp.register_callback_query_handler(my_items, menu_cd.filter(action="page"))
     dp.register_callback_query_handler(select_item, item_cd.filter(action="select-item"))
+
+    dp.register_callback_query_handler(select_item, item_cd.filter(action="main-menu-balance"))
     #dp.register_message_handler(bot_help, CommandHelp())

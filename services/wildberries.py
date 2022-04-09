@@ -36,7 +36,7 @@ async def get_cards_list(token, count = 10, offset = 0) -> dict:
     try:
         data = await resp.json()
         if "error" in data:
-            return None
+            return data["error"]["message"]
         return data
     except:
         return None
@@ -74,6 +74,28 @@ async def get_item_info(token, nm_id: int) -> dict:
     except:
         return None
 
-async def change_item_name(token, imt_id, name) -> bool:
+async def change_item_name(token, nm_id, name) -> bool:
     headers = {'Authorization': token}
-    pass
+    res = await get_item_info(token, nm_id)
+    card = res["result"]["cards"][0]
+
+    for i in range(len(card["addin"])):
+        if(card["addin"][i]["type"] == "Наименование"): card["addin"][i]["params"][0]["value"] = name; break;
+
+    data = {
+        "id":1,
+        "jsonrpc":"2.0",
+        "params":{
+            "card": card
+        }
+    }
+
+    resp = await requests.post(f'{url}card/update', headers=headers, data=json.dumps(data))
+    try:
+        res = await resp.json()
+        if "error" in res:
+            return res["error"]["message"]
+        return res
+    except:
+        return None
+

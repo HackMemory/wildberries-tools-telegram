@@ -87,19 +87,19 @@ class InlineMenu(InlineConstructor):
 
 
     @staticmethod
-    def item_menu(page = 0):
+    def item_menu(page = 0, item_id = 0):
         schema = [1, 1]
         btns = [
-            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data="void") },
+            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data=item_id) },
             {'text': '◀️Назад', "cb": menu_cd.new(action="page", data=page) }
         ]
         return InlineMenu._create_kb(btns, schema)
 
     @staticmethod
-    def item_menu_custom():
+    def item_menu_custom(item_id = 0):
         schema = [1, 1]
         btns = [
-            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data="void") },
+            {'text': 'Изменить наименование', "cb": menu_cd.new(action="item-change-name", data=item_id) },
             {'text': '◀️В меню', "cb": menu_cd.new(action="main-menu-open", data="void") }
         ]
         return InlineMenu._create_kb(btns, schema)

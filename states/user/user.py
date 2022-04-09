@@ -5,6 +5,7 @@ class Token(StatesGroup):
 
 class ChangeItem(StatesGroup):
     item_name = State()
+    item_id = State()
 
 class FindItem(StatesGroup):
     item_id = State()

@@ -10,6 +10,17 @@ from states.user import user
 from utils.db.db_api.users import Users
 
 
+async def cancel_handler(message: types.Message, state: FSMContext):
+    kb = keyboards.inline.InlineMenu.back_menu_button()
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    # Cancel state and inform user about it
+    await state.finish()
+    # And remove keyboard (just in case)
+    await message.answer('Действие отменено.', reply_markup=kb)
+
+
 async def bot_start(entity: types.Message, state: FSMContext):
     caption = f'Тут какой-то приветсвенный текст'
     kb = keyboards.inline.InlineMenu.start_menu()
@@ -26,9 +37,12 @@ async def main_menu(entity: Union[types.Message, types.CallbackQuery], state: FS
     kb = keyboards.inline.InlineMenu.main_menu(has_token)
 
     if isinstance(entity, types.CallbackQuery):
-        await entity.message.edit_text(caption, reply_markup=kb)
-        await entity.answer()
-        return
+        try:
+            await entity.message.edit_text(caption, reply_markup=kb)
+            await entity.answer()
+            return
+        except:
+            return await entity.message.answer(caption, reply_markup=kb)
     
     await entity.answer(caption, reply_markup=kb)
 
@@ -60,7 +74,7 @@ async def remove_token(entity: Union[types.Message, types.CallbackQuery], state:
     await entity.answer(caption, reply_markup=kb)
 
 async def add_token(entity: Union[types.Message, types.CallbackQuery], state: FSMContext):
-    caption = f'Введите ваш токен ниже'
+    caption = "Введите ваш токен ниже\nЧтобы отменить действие, напишите /cancel"
 
     kb = keyboards.inline.InlineMenu.back_menu_button()
     await user.Token.token.set()

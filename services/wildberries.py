@@ -1,4 +1,5 @@
 import json
+import urllib
 from aiohttp_requests import requests
 
 url = 'https://suppliers-api.wildberries.ru/'
@@ -74,13 +75,16 @@ async def get_item_info(token, nm_id: int) -> dict:
     except:
         return None
 
-async def change_item_name(token, nm_id, name) -> bool:
+async def change_item_name(token, nm_id, name, country = ''):
     headers = {'Authorization': token}
     res = await get_item_info(token, nm_id)
     card = res["result"]["cards"][0]
 
     for i in range(len(card["addin"])):
         if(card["addin"][i]["type"] == "Наименование"): card["addin"][i]["params"][0]["value"] = name; break;
+
+    if country != 'void' and card["countryProduction"] == "":
+        card["countryProduction"] = country
 
     data = {
         "id":1,
@@ -99,3 +103,14 @@ async def change_item_name(token, nm_id, name) -> bool:
     except:
         return None
 
+
+async def country_list(token, char):
+    headers = {'Authorization': token}
+
+    try:
+        resp = await requests.get(f'{url}api/v1/directory/countries?top=100&pattern={char}', headers=headers)
+        res = await resp.json()
+        if not res["error"]:
+            return res["data"]
+    except:
+        return []

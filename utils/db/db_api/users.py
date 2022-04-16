@@ -76,6 +76,33 @@ class Users(SqliteConnection):
         return None
 
     @staticmethod
+    async def update_user_change_count(id, count):
+        # SQL_EXAMPLE = "UPDATE Users SET token=##### WHERE id=12345"
+
+        sql = f"""
+        UPDATE Users SET change_count=? WHERE id=?
+        """
+        Users._make_request(sql, params=(count, id))
+
+    @staticmethod
+    async def decrease_user_change_count(id):
+        count = await Users.get_user_count(id)
+        if count != None and count != 0:
+            await Users.update_user_change_count(id, count-1)
+            return True
+        else:
+            return False
+
+    @staticmethod
+    async def add_user_change_count(id, add_count):
+        count = await Users.get_user_count(id)
+        if count != None:
+            await Users.update_user_change_count(id, count+add_count)
+            return True
+        else:
+            return False
+
+    @staticmethod
     async def update_user_token(token, id):
         # SQL_EXAMPLE = "UPDATE Users SET token=##### WHERE id=12345"
 

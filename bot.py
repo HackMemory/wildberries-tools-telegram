@@ -10,6 +10,7 @@ import logging
 from utils.db.db_api import Users
 
 from data import config
+from utils.db.db_api.payments import Payments
 
 
 # noinspection PyUnusedLocal
@@ -21,6 +22,7 @@ async def on_startup(dp: Dispatcher):
     handlers.user.setup(dp)
 
     await Users.create_table_users()
+    await Payments.create_table_payments()
 
 
 async def on_shutdown(dp: Dispatcher):
@@ -28,7 +30,7 @@ async def on_shutdown(dp: Dispatcher):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    #logging.basicConfig(level=logging.DEBUG)
 
     bot = Bot(config.BOT_TOKEN, parse_mode=ParseMode.HTML)
     storage = MemoryStorage()

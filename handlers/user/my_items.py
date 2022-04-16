@@ -150,15 +150,15 @@ async def select_item(entity: types.CallbackQuery, callback_data: dict):
 
     token = await Users.get_user_token(entity.from_user.id)
     if token == None or token == "":
-        return await entity.answer('Произошла ошибка', reply_markup=kb)
+        return await entity.message.answer('Произошла ошибка', reply_markup=kb)
 
     data = await wildberries.get_item_info(token, callback_data["data"])
     if data == None:
-        return await entity.answer('Произошла ошибка', reply_markup=kb)
+        return await entity.message.answer('Произошла ошибка', reply_markup=kb)
 
     card = data["result"]["cards"][0]
     if card == None:
-        return await entity.answer('Произошла ошибка', reply_markup=kb)
+        return await entity.message.answer('Произошла ошибка', reply_markup=kb)
 
     for x in card["addin"]:
         if(x["type"] == "Бренд"): brend_val = x["params"][0]["value"]; break;
@@ -268,6 +268,12 @@ async def process_change_name(entity: types.Message, state: FSMContext):
         return await entity.answer("Произошла ошибка, попробуйте устранить и повторите еще раз\n"+data, reply_markup=keyboards.inline.InlineMenu.back_menu_button())
 
     await state.finish()
+
+    if not await Users.decrease_user_change_count(entity.from_user.id):
+        return await entity.answer(
+            "У вас закончились попытки изменений наименования.\nПополните балнас, чтобы продолжить",
+             reply_markup=keyboards.inline.InlineMenu.back_menu_button()
+        )
 
     kb = keyboards.inline.InlineMenu.back_menu_button()
     await entity.answer("Наименование успешно изменено", reply_markup=kb)

@@ -7,7 +7,8 @@ from data import config
 import keyboards.inline
 from services import wildberries
 from states.user import user
-from utils.db.db_api.users import Users
+from utils.db.db_api.payments import Payments
+from utils.db.db_api.users import *
 
 async def select_payment(entity: types.CallbackQuery, state: FSMContext):
     caption = 'Тут какой-то текст про оплату'
@@ -27,7 +28,7 @@ async def start_payment(entity: types.CallbackQuery, state: FSMContext, callback
         is_flexible=False,
         prices=[config.prices[int(index)]],
         start_parameter='wildberries-payment-0000',
-        payload='wildberries-payment',
+        payload=index,
         reply_markup=kb
     )
 
@@ -38,4 +39,11 @@ async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery)
 
 async def got_payment(entity: types.Message):
     kb = keyboards.inline.InlineMenu.back_menu_button()
-    entity.answer("Спасибо за покупку!", reply_markup=kb)
+
+    sp = entity.successful_payment
+    index = int(sp.invoice_payload)
+    
+    await Users.add_user_change_count(entity.from_user.id, config.prices_amount[index])
+    await Payments.add_payment(entity.from_user.id, entity.from_user.username, sp.telegram_payment_charge_id, sp.provider_payment_charge_id, sp.total_amount//100)
+
+    await entity.answer("Спасибо за покупку!", reply_markup=kb)

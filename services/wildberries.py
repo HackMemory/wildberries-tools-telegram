@@ -33,13 +33,15 @@ async def get_cards_list(token, count = 10, offset = 0) -> dict:
         "id":1
     }
     
+    res = None
     resp = await requests.post(f'{url}card/list', headers=headers, data=json.dumps(data))
     try:
-        data = await resp.json()
-        if "error" in data:
-            return data["error"]["message"]
-        return data
-    except:
+        res = await resp.json()
+        if "error" in res:
+            return res["error"]["message"]
+        return res
+    except Exception as e:
+        print(e)
         return None
     
 
@@ -78,6 +80,9 @@ async def get_item_info(token, nm_id: int) -> dict:
 async def change_item_name(token, nm_id, name, country = ''):
     headers = {'Authorization': token}
     res = await get_item_info(token, nm_id)
+    if res == None:
+        return None
+        
     card = res["result"]["cards"][0]
 
     for i in range(len(card["addin"])):
